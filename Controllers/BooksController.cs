@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using backend.Models.Books;
 using backend.Services;
 
-[ApiController]
 [Authorize]
+[ApiController]
 [Route("[controller]")]
 public class BooksController : ControllerBase
 {

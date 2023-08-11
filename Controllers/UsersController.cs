@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using backend.Models.Users;
 using backend.Services;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
-
-[Authorize]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;

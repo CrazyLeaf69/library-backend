@@ -7,8 +7,8 @@ using backend.Models.Quotes;
 using backend.Models.FavoriteQuotes;
 using backend.Services;
 
-[ApiController]
 [Authorize]
+[ApiController]
 [Route("[controller]")]
 public class QuotesController : ControllerBase
 {
