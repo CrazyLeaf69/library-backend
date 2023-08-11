@@ -31,7 +31,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 services.AddCors(options => options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins("https://library-frontend-e134b4ccs-crazyleaf69.vercel.app/").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
