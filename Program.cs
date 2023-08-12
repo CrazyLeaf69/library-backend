@@ -5,7 +5,7 @@ using backend.Helpers;
 using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-ConfigurationManager configuration = builder.Configuration;
+ConfigurationManager _configuration = builder.Configuration;
 
 // Add services to the container.
 var services = builder.Services;
@@ -22,7 +22,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:AccessSecret").Value)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:AccessSecret").Value)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
@@ -31,7 +31,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 services.AddCors(options => options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        policy.WithOrigins(configuration.GetSection("AppSettings:ClientUrl").Value).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins(_configuration["AppSettings:ClientUrl"]).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
