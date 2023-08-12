@@ -12,6 +12,12 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 
+public enum TokenType
+{
+    Access,
+    Refresh
+}
+
 public interface IAuthService
 {
     Response Register(RegisterRequest model);
@@ -66,7 +72,7 @@ public class AuthService : IAuthService
 
     public Response Verify(string token)
     {
-        if (!IsTokenValid(token, out string username)) return new Response { code = 422, message = "Invalid token" };
+        if (!IsTokenValid(token, TokenType.Access, out string username)) return new Response { code = 422, message = "Invalid token" };
 
         var user = _userService.GetByUsername(username);
         if (user == null) return new Response { code = 404, message = "User not found" };
@@ -82,7 +88,7 @@ public class AuthService : IAuthService
 
     public Response RefreshAccessToken(string refreshToken)
     {
-        if (!IsTokenValid(refreshToken, out string username)) return new Response { code = 422, message = "Invalid token" };
+        if (!IsTokenValid(refreshToken, TokenType.Refresh, out string username)) return new Response { code = 422, message = "Invalid token" };
 
         var user = _userService.GetByUsername(username);
         if (user == null) return new Response { code = 404, message = "User not found" };
@@ -101,23 +107,23 @@ public class AuthService : IAuthService
     // Token Helper Functions
     private string GenerateAccessToken(User user)
     {
-        var secret = Configuration.GetSection("AppSettings:accessSecret").Value!;
+        var secret = Configuration.GetSection("AppSettings:AccessSecret").Value!;
         var claims = new[]
         {
             new Claim("Id", user.Id.ToString()), new Claim("Username", user.Username),
-            new Claim("type", "access"),
+            new Claim("Type", TokenType.Access.ToString()),
         };
 
-        return GenerateToken(claims,secret, TimeSpan.FromMinutes(15));
+        return GenerateToken(claims, secret, TimeSpan.FromMinutes(15));
     }
 
     private string GenerateRefreshToken(User user)
     {
-        var secret = Configuration.GetSection("AppSettings:refreshSecret").Value!;
+        var secret = Configuration.GetSection("AppSettings:RefreshSecret").Value!;
         var claims = new[]
         {
             new Claim("Id", user.Id.ToString()), new Claim("Username", user.Username),
-            new Claim("type", "refresh"),
+            new Claim("Type", TokenType.Refresh.ToString()),
         };
 
         return GenerateToken(claims, secret, TimeSpan.FromMinutes(15));
@@ -138,33 +144,44 @@ public class AuthService : IAuthService
     }
 
     // Token Validation Functions
-    private JwtSecurityToken ValidateToken(string token)
-    {
-        var splitToken = token.Split(' ')[1];
-        if (splitToken == null || splitToken == "null") return null;
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenData = tokenHandler.ReadJwtToken(splitToken);
-
-        return tokenData;
-    }
-
-    private bool IsTokenValid(string token, out string username)
+    private bool IsTokenValid(string token, TokenType type, out string username)
     {
         username = null;
 
-        var tokenData = ValidateToken(token);
+        var secret = Configuration.GetSection("AppSettings:"+ type.ToString() +"Secret").Value!;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var validationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var splitToken = token.Split(' ')[1];
+        if (splitToken == null || splitToken == "null") return false;
+
+        tokenHandler.ValidateToken(splitToken, validationParameters, out SecurityToken validatedToken);
+        if (validatedToken == null) return false;
+
+        var tokenData = ReadTokenData(token);
         if (tokenData == null) return false;
 
         var claims = tokenData.Claims;
+
+        string tokenType = claims.FirstOrDefault(c => c.Type == "Type")?.Value;
+        if (tokenType != type.ToString()) return false;
+
         username = claims.FirstOrDefault(c => c.Type == "Username")?.Value;
 
         return !string.IsNullOrEmpty(username);
     }
-
     private bool IsTokenExpired(string token)
     {
-        var tokenData = ValidateToken(token);
+        var tokenData = ReadTokenData(token);
         if (tokenData == null) return true;
 
         var expClaim = tokenData.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
@@ -173,5 +190,15 @@ public class AuthService : IAuthService
         var expDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim)).UtcDateTime;
 
         return expDate < DateTime.UtcNow;
+    }
+    private JwtSecurityToken ReadTokenData(string token)
+    {
+        var splitToken = token.Split(' ')[1];
+        if (splitToken == null || splitToken == "null") return null;
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenData = tokenHandler.ReadJwtToken(splitToken);
+
+        return tokenData;
     }
 }
