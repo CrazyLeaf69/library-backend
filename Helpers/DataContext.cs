@@ -2,10 +2,23 @@ namespace backend.Helpers;
 
 using Microsoft.EntityFrameworkCore;
 using backend.Entities;
+using Microsoft.Extensions.Configuration;
 
 public class DataContext : DbContext
 {
-    protected readonly IConfiguration Configuration;
+    IConfiguration Configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddAzureAppConfiguration(options =>
+    {
+        options.Connect(Environment.GetEnvironmentVariable("ConnectionString"))
+               .UseFeatureFlags()
+               .ConfigureRefresh(refresh =>
+               {
+                   refresh.Register("AppSettings:ClientUrl", refreshAll: true);
+               });
+    })
+    .Build();
 
     public DataContext(IConfiguration configuration)
     {
