@@ -10,6 +10,7 @@ ConfigurationManager _configuration = builder.Configuration;
 // Add services to the container.
 var services = builder.Services;
 
+services.AddAzureAppConfiguration();
 services.AddDbContext<DataContext>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 services.AddControllers();
