@@ -23,16 +23,20 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:AccessSecret").Value)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:AccessSecret").Value!)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
         };
     });
-services.AddCors(options => options.AddPolicy(name: "NgOrigins",
+services.AddCors(options => 
+    options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        policy.WithOrigins(_configuration["AppSettings:ClientUrl"]).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+        //policy.WithOrigins(_configuration.GetSection("AppSettings:ClientUrl").Value!).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
