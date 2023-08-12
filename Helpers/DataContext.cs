@@ -18,7 +18,7 @@ public class DataContext : DbContext
         // in memory database used for simplicity, change to a real db for production applications
         // options.UseInMemoryDatabase("TestDb");
         // connect to postgres with connection string from app settings
-        options.UseNpgsql(Configuration.GetConnectionString("AZURE_POSTGRESQL_CONNECTIONSTRING"));
+        options.UseNpgsql(Configuration.GetConnectionString("DbConnection"));
     }
 
     public DbSet<User> Users { get; set; }

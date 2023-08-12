@@ -23,7 +23,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("86af5de5c941998dd3fc0550aba3b9d83a1107d8ab987c37a153877e738b8baf")),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:AccessSecret").Value!)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
@@ -33,10 +33,7 @@ services.AddCors(options =>
     options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        //policy.AllowAnyOrigin()
-        //                   .AllowAnyHeader()
-        //                   .AllowAnyMethod();
-        policy.WithOrigins("https://library-frontend-crazyleaf69.vercel.app").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins(_configuration.GetSection("AppSettings:ClientUrl").Value!).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
