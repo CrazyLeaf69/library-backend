@@ -33,10 +33,10 @@ services.AddCors(options =>
     options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        policy.AllowAnyOrigin()
-                           .AllowAnyHeader()
-                           .AllowAnyMethod();
-        //policy.WithOrigins(_configuration.GetSection("AppSettings:ClientUrl").Value!).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        //policy.AllowAnyOrigin()
+        //                   .AllowAnyHeader()
+        //                   .AllowAnyMethod();
+        policy.WithOrigins("https://library-frontend-crazyleaf69.vercel.app").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
