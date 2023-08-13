@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager _configuration = builder.Configuration;
 
 var keyVaultUrl = new Uri(_configuration.GetSection("KeyVaultURL").Value!);
-string userAssignedClientId = "cd0e2c4b-9d92-41c7-a511-53235590167a";
-var azureCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userAssignedClientId });
+var azureCredential = new DefaultAzureCredential();
 builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
 
 // Add services to the container.
