@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using static System.Net.Mime.MediaTypeNames;
 
 public enum TokenType
 {
@@ -148,7 +149,8 @@ public class AuthService : IAuthService
     {
         username = null;
 
-        var secret = Configuration.GetSection("AppSettings:"+ type.ToString() +"Secret").Value!;
+        string typeStr = type.ToString();
+        var secret = Configuration.GetSection($"AppSettings:{typeStr}Secret").Value!;
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var validationParameters = new TokenValidationParameters()
         {

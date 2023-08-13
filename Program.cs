@@ -8,9 +8,9 @@ using Azure.Identity;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager _configuration = builder.Configuration;
 
-var keyVaultUrl = new Uri(_configuration.GetSection("KeyVaultURL").Value!);
-var azureCredential = new DefaultAzureCredential();
-builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
+//var keyVaultUrl = new Uri(_configuration.GetSection("KeyVaultURL").Value!);
+//var azureCredential = new DefaultAzureCredential();
+//builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
 
 // Add services to the container.
 var services = builder.Services;
@@ -26,7 +26,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AccessSecret").Value!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:AccessSecret").Value!)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
@@ -36,7 +36,7 @@ services.AddCors(options =>
     options.AddPolicy(name: "NgOrigins",
     policy =>
     {
-        policy.WithOrigins(_configuration.GetSection("ClientUrl").Value!).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins(_configuration.GetSection("AppSettings:ClientUrl").Value!).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     }));
 
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
