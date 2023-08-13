@@ -26,10 +26,10 @@ public class FavoriteQuoteService : IFavoriteQuoteService
 
     public void Create(CreateFavoriteQuoteRequest model)
     {
-        // map model to new quote object
+        // map model to new favoriteQuote object
         var favoriteQuote = _mapper.Map<FavoriteQuote>(model);
 
-        // save quote
+        // save favoriteQuote
         _context.FavoriteQuotes.Add(favoriteQuote);
         _context.SaveChanges();
     }

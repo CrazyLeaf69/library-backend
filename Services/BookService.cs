@@ -63,7 +63,6 @@ public class BookService : IBookService
         // map model to new book object
         var book = _mapper.Map<Book>(model);
 
-
         // save book
         _context.Books.Add(book);
         _context.SaveChanges();

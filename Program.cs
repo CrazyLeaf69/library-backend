@@ -8,18 +8,15 @@ using Azure.Identity;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager _configuration = builder.Configuration;
 
-//var keyVaultUrl = new Uri(_configuration.GetSection("KeyVaultURL").Value!);
-//var azureCredential = new DefaultAzureCredential();
-//builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
-
 // Add services to the container.
 var services = builder.Services;
 services.AddDbContext<DataContext>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -32,6 +29,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
         };
     });
+
 services.AddCors(options => 
     options.AddPolicy(name: "NgOrigins",
     policy =>

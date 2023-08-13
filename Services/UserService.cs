@@ -52,7 +52,7 @@ public class UserService : IUserService
 
     public void Create(CreateUserRequest model)
     {
-        // map model to book object
+        // map model to user object
         var user = _mapper.Map<User>(model);
         _context.Users.Add(user);
         _context.SaveChanges();
@@ -62,7 +62,7 @@ public class UserService : IUserService
     {
         var user = getUser(id);
 
-        // copy model to book and save
+        // copy model to user and save
         _mapper.Map(model, user);
         _context.Users.Update(user);
         _context.SaveChanges();
@@ -76,7 +76,6 @@ public class UserService : IUserService
     }
 
     // helper methods
-
     private User getUser(int id)
     {
         var user = _context.Users.Find(id);
