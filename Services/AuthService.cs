@@ -149,25 +149,25 @@ public class AuthService : IAuthService
     {
         username = null;
 
-        string typeStr = type.ToString();
-        var secret = Configuration.GetSection($"AppSettings:{typeStr}Secret").Value!;
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var validationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key,
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-        };
+        //string typeStr = type.ToString();
+        //var secret = Configuration.GetSection($"AppSettings:{typeStr}Secret").Value!;
+        //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        //var validationParameters = new TokenValidationParameters()
+        //{
+        //    ValidateIssuerSigningKey = true,
+        //    IssuerSigningKey = key,
+        //    ValidateIssuer = false,
+        //    ValidateAudience = false,
+        //    ValidateLifetime = true,
+        //};
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var splitToken = token.Split(' ')[1];
         if (splitToken == null || splitToken == "null") return false;
 
-        tokenHandler.ValidateToken(splitToken, validationParameters, out SecurityToken validatedToken);
-        if (validatedToken == null) return false;
+        //tokenHandler.ValidateToken(splitToken, validationParameters, out SecurityToken validatedToken);
+        //if (validatedToken == null) return false;
 
         var tokenData = ReadTokenData(token);
         if (tokenData == null) return false;
