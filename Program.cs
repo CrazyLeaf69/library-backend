@@ -4,20 +4,28 @@ using System.Text;
 using backend.Helpers;
 using backend.Services;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager _configuration = builder.Configuration;
 
-//var keyVaultUrl = new Uri(_configuration.GetSection("KeyVaultURL").Value!);
-//var azureCredential = new DefaultAzureCredential();
-//builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
+string KVUrl = _configuration["KeyVaultConfig:KVUrl"];
+string tenantId = _configuration["KeyVaultConfig:TenantId"];
+string clientId = _configuration["KeyVaultConfig:ClientId"];
+string clientSecret = _configuration["KeyVaultConfig:ClientSecretId"];
+
+var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+var client = new SecretClient(new Uri(KVUrl), credential);
+builder.Configuration.AddAzureKeyVault(client, new AzureKeyVaultConfigurationOptions());
 
 // Add services to the container.
 var services = builder.Services;
 services.AddDbContext<DataContext>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
