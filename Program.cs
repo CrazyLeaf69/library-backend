@@ -28,6 +28,7 @@ services.AddControllers();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -40,6 +41,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
         };
     });
+
 services.AddCors(options => 
     options.AddPolicy(name: "NgOrigins",
     policy =>

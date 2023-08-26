@@ -48,9 +48,6 @@ public class QuoteService : IQuoteService
              UserId = result.Id,
              Username = result.Username,
              FavoriteQuoteId = _context.FavoriteQuotes.FirstOrDefault(fq => fq.UserId == loggedInUserId && fq.QuoteId == result.Quote.Id).Id
-             //IsFavorite = _context.FavoriteQuotes.Any(fq => 
-             //   fq.UserId == loggedInUserId && fq.QuoteId == result.Quote.Id
-             //)
          });
 
         return quotesWithUsernames;
